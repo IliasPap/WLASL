@@ -7,14 +7,14 @@ Please visit the [project homepage](https://dxli94.github.io/WLASL/) for news up
 
 Please **star the repo** to help with the visibility if you find it useful.
 
-Download
+Download Original Videos
 -----------------
 1. Download repo.
 ```
 git clone https://github.com/dxli94/WLASL.git
 ```
 
-2. Install [youtube-dl](https://github.com/ytdl-org/youtube-dl#installation) for downloading YouTube videos.
+2. Install [youtube-dl](https://github.com/ytdl-org/youtube-dl) for downloading YouTube videos.
 3. Download raw videos.
 ```
 cd start_kit
@@ -26,10 +26,12 @@ python preprocess.py
 ```
 5. You should expect to see video samples under directory ```videos/```.
 
-Requesting Missing Videos
+Requesting Missing / Pre-processed Videos
 -----------------
 
-Videos can dissapear over time due to expired urls, so you may find the videos you downloaded incomplete, we provide the following solution for you to have access to missing videos.
+Videos can dissapear over time due to expired urls, so you may find the downloaded videos incomplete. In this regard, we provide the following solution for you to have access to missing videos.
+
+We also provide pre-processed videos for the full WLASL dataset on request, which saves troubles of video processing for you.
 
  (a) Run
 ```
@@ -89,32 +91,46 @@ Constituting subsets
 As described in the paper, four subsets WLASL100, WLASL300, WLASL1000 and WLASL2000 are constructed by taking the top-K (k=100, 300, 1000 and 2000) glosses from the `WLASL_vx.x.json` file.
 
 
-FAQ
+Training and Testing
 ---------------
-**File formats**
+**I3D**
 
-Q1. Do you convert .swf files? / Do you convert everything to .mp4?
+```
+cd WLASL
+mkdir data
+```
+put all the videos under ```data/```.
+```
+cp WLASL2000 -r data/
+```
+To train models, first download [I3D weights pre-trained Kinetics](https://drive.google.com/file/d/1JgTRHGBRCHyHRT_rAF0fOjnfiFefXkEd/view?usp=sharing) and unzip it. You should see a folder ```I3D/weights/```.
 
-A1. Generally depends on how you feed the videos into the model. But yes, in our implementations, we use ffmpeg to convert all files into .mp4 format to a unified data io.
+```
+python train_i3d.py
+```
+To test pre-trained models, first download [WLASL pre-trained weights](https://drive.google.com/file/d/1jALimVOB69ifYkeT0Pe297S1z4U3jC48/view?usp=sharing) and unzip it. You should see a folder ```I3D/archived/```.
 
-**Connection Error**
+```
+python test_i3d.py
+```
+By default the script tests WLASL2000. To test other subsets, please change line 264, 270 in ```test_i3d.py``` properly.
 
-Q2. Connection forcibly closed by remote server?
-
-A2. First, manually access the URL and ensure it is valid or not. If it is invalid, please report to us via email and we will look into it. Otherwise, it is likely you are requesting too frequently. Try adding pauses between your requests to avoid the issue.
-
-**Missing Videos**
-
-Q3. I encountered 404 error. / Downloader is not able to download certain videos.
-
-A3. If you see a lot of broken URLs, please see Q2. If you have a dozens of broken URLs, please first manually check whether they are valid in your browser. Then you can either choose to manually save the videos or report to us for invalid cases. If you have only a few of videos missing because of deprecated URLs or connections, you may request for the missing ones by email to dongxu.li@anu.edu.au.
+A previous release can be found [here](https://drive.google.com/file/d/1vktQxvRHNS9psOQVKx5-dsERlmiYFRXC/view).
 
 
-TODO
---------------
-1. Adding a preprocess script.
-2. Release training models.
+**Pose-TGCN**
 
+Download [splits file](https://drive.google.com/file/d/16CWkbMLyEbdBkrxAPaxSXFP_aSxKzNN4/view?usp=sharing) and [body keypoints](https://drive.google.com/file/d/1k5mfrc2g4ZEzzNjW6CEVjLvNTZcmPanB/view?usp=sharing). Unzip them into ```WLASL/data```. You should see ```WLASL/data/splits``` and ```WLASL/data/pose_per_individual_videos``` folders.
+
+To train the model, modify paths in ```train_tgcn.py main()``` to point to WLASL root.
+```
+python train_tgcn.py
+```
+
+To test the model, first download [pre-trained models](https://drive.google.com/file/d/1dzvocsaylRsjqaY4r_lyRihPZn0I6AA_/view?usp=sharing) and unzip to ```code/TGCN/archived```. Then run
+```
+python test_tgcn.py
+```
 
 License
 ---------------
@@ -123,6 +139,8 @@ Licensed under the Computational Use of Data Agreement (C-UDA). Plaese refer to 
 Disclaimer
 ---------------
 All the WLASL data is intended for academic and computational use only. No commercial usage is allowed. We highly respect copyright and privacy. If you find WLASL violates your rights, please contact us.
+
+
 
 
 Citation
@@ -140,24 +158,19 @@ Please cite the WLASL paper if it helps your research:
 
 Please consider citing our work on WLASL.
 
-    @article{li2020transferring,
-      title={Transferring Cross-domain Knowledge for Video Sign Language Recognition},
-      author={Li, Dongxu and Yu, Xin and Xu, Chenchen and Petersson, Lars and Li, Hongdong},
-      journal={arXiv preprint arXiv:2003.03703},
-      year={2020}
+    @inproceedings{li2020transferring,
+     title={Transferring cross-domain knowledge for video sign language recognition},
+     author={Li, Dongxu and Yu, Xin and Xu, Chenchen and Petersson, Lars and Li, Hongdong},
+     booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+     pages={6205--6214},
+     year={2020}
     }
 
+Other works you might be interested in.
 
-Revision History
---------------
-* WLASLv0.3 (Apr. 16, 2019): updated dead URL links on deafASL.
-* WLASLv0.3 (Mar. 16, 2020): updated dead URL links. Added a script for downloading non-YouTube videos.
-* WLASLv0.2 (Mar. 11, 2020): updated URL links for ASL signbank.
-
-
-Contacts
-------------------
-- [Dongxu Li](https://cecs.anu.edu.au/people/dongxu-li): [email](dongxu.li@anu.edu.au)
-- [Hongdong Li](https://cecs.anu.edu.au/~hongdong): [email](hongdong.li@anu.edu.au)
-
-Please send queries with your institude mail address.
+    @article{li2020tspnet,
+     title={TSPNet: Hierarchical Feature Learning via Temporal Semantic Pyramid for Sign Language Translation},
+     author={Li, Dongxu and Xu, Chenchen and Yu, Xin and Zhang, Kaihao and Swift, Benjamin and Suominen, Hanna and Li, Hongdong},
+     journal={arXiv preprint arXiv:2010.05468},
+     year={2020}
+    }
